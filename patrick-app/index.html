@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Patrick — Guide PVT / Working Holiday à Montréal</title>
+<!--
+  SCAFFOLD MVP — retrieval + réponses MOCKÉS (aucun appel réseau, aucune clé).
+  But : développer et tester l'UI sans AWS/Bedrock.
+  Quand le backend sera prêt : remplacer mockChat() par fetch('/api/chat')
+  vers la fonction serverless (qui appelle Knowledge Base + Claude/Bedrock).
+  Voir openspec/changes/patrick-webapp/design.md §2-3.
+-->
+<style>
+  :root{
+    --bg:#0f1720; --panel:#16212e; --panel2:#1d2b3a; --ink:#e8eef5; --muted:#9fb0c3;
+    --accent:#3ba36b; --accent2:#2f7fd1; --warn:#e0a83d; --user:#274b6d; --line:#25384a;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);display:flex;justify-content:center}
+  .app{width:100%;max-width:820px;min-height:100vh;display:flex;flex-direction:column;padding:16px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .logo{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center;font-size:20px;flex:0 0 auto}
+  h1{font-size:18px;margin:0}
+  header .sub{font-size:12px;color:var(--muted)}
+  .lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .lang button{background:transparent;color:var(--muted);border:0;padding:6px 12px;cursor:pointer;font-size:13px}
+  .lang button.on{background:var(--accent2);color:#fff}
+  .disclaimer{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--warn);
+    border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--muted);margin:8px 0}
+  .chat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:280px}
+  .msg{max-width:88%;padding:10px 13px;border-radius:12px;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
+  .msg.p{background:var(--panel2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.u{background:var(--user);align-self:flex-end;border-bottom-right-radius:4px}
+  .sources{margin-top:8px;font-size:12px;color:var(--muted)}
+  .sources a{color:#7fc4ff;text-decoration:none;display:block;margin-top:2px}
+  .sources a:hover{text-decoration:underline}
+  .typing{font-size:13px;color:var(--muted);font-style:italic}
+  /* topic blocks */
+  .blocks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+  @media(max-width:560px){.blocks{grid-template-columns:1fr}}
+  .block{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .block h3{margin:0 0 7px;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .chip{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:999px;
+    padding:5px 10px;font-size:12.5px;color:var(--ink);cursor:pointer;margin:3px 4px 0 0;line-height:1.35}
+  .chip:hover{border-color:var(--accent2)}
+  form{display:flex;gap:8px;margin-top:12px}
+  input[type=text]{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;color:var(--ink);font-size:14.5px}
+  input[type=text]:focus{outline:none;border-color:var(--accent2)}
+  button.send{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:0 18px;cursor:pointer;font-size:14px;font-weight:600}
+  button.send:disabled{background:#2a4738;color:#8aa;cursor:not-allowed}
+  .bar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+    padding:6px 11px;font-size:12.5px;cursor:pointer}
+  .ghost:hover{border-color:var(--accent2);color:var(--ink)}
+  .foot{font-size:11px;color:var(--muted);text-align:center;margin-top:10px}
+  .rest{text-align:center;color:var(--warn);font-size:13px;padding:8px}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--accent);
+    color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">🍁</div>
+    <div>
+      <h1>Patrick</h1>
+      <div class="sub" data-i18n="tagline">Ton guide PVT / Working Holiday à Montréal</div>
+    </div>
+    <div class="lang" role="group" aria-label="language">
+      <button id="fr" class="on" onclick="setLang('fr')">FR</button>
+      <button id="en" onclick="setLang('en')">EN</button>
+    </div>
+  </header>
+
+  <div class="disclaimer" data-i18n="disclaimer">
+    ℹ️ Info générale, <b>pas un conseil officiel</b> (immigration, santé, juridique, financier).
+    Vérifie toujours auprès des sources officielles (IRCC, RAMQ, TAL, SAAQ). Aucune donnée personnelle n'est conservée.
+  </div>
+
+  <div class="chat" id="chat" aria-live="polite"></div>
+
+  <div class="bar">
+    <button class="ghost" id="copyBtn" onclick="copyRecap()" data-i18n="copy">📋 Copier le récap</button>
+    <button class="ghost" id="dlBtn" onclick="downloadRecap()" data-i18n="download">⬇️ Télécharger (.md)</button>
+    <button class="ghost" id="resetBtn" onclick="resetChat()" data-i18n="reset">↺ Réinitialiser</button>
+  </div>
+
+  <div class="blocks" id="blocks"></div>
+
+  <form id="form" onsubmit="return onSend(event)">
+    <input type="text" id="input" autocomplete="off" data-i18n-ph="placeholder" placeholder="Pose ta question à Patrick…" />
+    <button class="send" id="sendBtn" type="submit" data-i18n="send">Envoyer</button>
+  </form>
+
+  <div class="foot" data-i18n="foot">Prototype — réponses simulées (données de démonstration). Backend RAG (Bedrock) à venir.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   i18n
+   ============================================================ */
+const I18N = {
+  fr:{ tagline:"Ton guide PVT / Working Holiday à Montréal",
+    disclaimer:"ℹ️ Info générale, <b>pas un conseil officiel</b> (immigration, santé, juridique, financier). Vérifie toujours auprès des sources officielles (IRCC, RAMQ, TAL, SAAQ). Aucune donnée personnelle n'est conservée.",
+    send:"Envoyer", placeholder:"Pose ta question à Patrick…",
+    foot:"Prototype — réponses simulées (données de démonstration). Backend RAG (Bedrock) à venir.",
+    greeting:"Salut 👋 Je suis Patrick. Pour te répondre juste, dis-moi ta (ou tes) nationalité(s), et pioche une question ci-dessous ou écris la tienne.",
+    typing:"Patrick réfléchit…",
+    unanswered:"Excellente question — je la note pour notre équipe. Je préfère ne pas deviner sur ce point plutôt que te donner une info non vérifiée. 🙏",
+    rest:"Patrick se repose 😴 — reviens demain (plafond quotidien de démo atteint).",
+    sources:"Sources :", offtopic:"Ça sort de mes attributions : je me concentre sur le PVT/Working Holiday et l'installation à Montréal. Reformule côté démarches d'arrivée et je t'aide avec plaisir !",
+    copy:"📋 Copier le récap", download:"⬇️ Télécharger (.md)", reset:"↺ Réinitialiser",
+    copied:"Récap copié ✓", downloaded:"Récap téléchargé ✓", nothing:"Rien à récapituler pour l'instant",
+    recapTitle:"Récap de mon échange avec Patrick", recapYou:"Moi", recapPat:"Patrick" },
+  en:{ tagline:"Your Working Holiday / PVT guide to Montreal",
+    disclaimer:"ℹ️ General info, <b>not official advice</b> (immigration, health, legal, financial). Always verify with official sources (IRCC, RAMQ, TAL, SAAQ). No personal data is stored.",
+    send:"Send", placeholder:"Ask Patrick a question…",
+    foot:"Prototype — simulated answers (demo data). RAG backend (Bedrock) coming.",
+    greeting:"Hi 👋 I'm Patrick. To answer you right, tell me your nationality (or nationalities), and pick a question below or type your own.",
+    typing:"Patrick is thinking…",
+    unanswered:"Great question — I'm logging it for our team. I'd rather not guess than give you unverified info. 🙏",
+    rest:"Patrick is resting 😴 — come back tomorrow (demo daily cap reached).",
+    sources:"Sources:", offtopic:"That's outside my scope: I focus on Working Holiday / PVT and settling in Montreal. Rephrase around arrival steps and I'm happy to help!",
+    copy:"📋 Copy recap", download:"⬇️ Download (.md)", reset:"↺ Reset",
+    copied:"Recap copied ✓", downloaded:"Recap downloaded ✓", nothing:"Nothing to recap yet",
+    recapTitle:"Recap of my chat with Patrick", recapYou:"Me", recapPat:"Patrick" }
+};
+let LANG = "fr";
+
+/* ============================================================
+   4 topic blocks — each 3-5 clickable question-links (FR/EN)
+   ============================================================ */
+const BLOCKS = {
+  fr:[
+    { t:"🛫 Avant / à l'arrivée", q:["Comment j'obtiens mon NAS ?","Suis-je couvert par la RAMQ ?","Quel budget prévoir pour arriver ?","Quelle assurance avant le départ ?"] },
+    { t:"🏠 Se loger & s'installer", q:["Comment chercher un logement à Montréal ?","Faut-il passer par un agent immobilier ?","Où me loger les premières semaines ?","Quelle banque pour un PVT ?","Comment avoir un forfait mobile pas cher ?"] },
+    { t:"🌆 Vivre à Montréal", q:["Comment me déplacer à Montréal ?","Comment survivre à l'hiver ?","Quoi faire quand on connaît personne ?","Des idées de sorties à petit budget ?"] },
+    { t:"🧭 PVT & coups de dur", q:["Le PVT selon ma nationalité ?","Comment éviter les arnaques logement ?","Je me sens seul·e, quelles ressources ?","Comment trouver un emploi / faire mon CV ?"] }
+  ],
+  en:[
+    { t:"🛫 Before / on arrival", q:["How do I get my SIN?","Am I covered by RAMQ?","What budget should I plan?","What insurance before leaving?"] },
+    { t:"🏠 Housing & setup", q:["How do I find housing in Montreal?","Should I use a real-estate agent?","Where to stay the first weeks?","Which bank for a Working Holiday?","How to get a cheap mobile plan?"] },
+    { t:"🌆 Living in Montreal", q:["How do I get around Montreal?","How do I survive winter?","What to do when you know no one?","Low-budget going-out ideas?"] },
+    { t:"🧭 PVT & tough days", q:["Working Holiday for my nationality?","How to avoid rental scams?","I feel lonely, what resources?","How to find a job / build my resume?"] }
+  ]
+};
+
+/* ============================================================
+   MOCK corpus — stands in for RAG retrieval (Bedrock KB)
+   ============================================================ */
+const MOCK = [
+  { keys:["nas","sin","assurance sociale"], topic:"NAS",
+    fr:"Le NAS (Numéro d'assurance sociale) est gratuit et indispensable pour travailler. Obtiens-le à Service Canada avec passeport + permis de travail, souvent le jour même.",
+    en:"The SIN is free and required to work. Get it at Service Canada with your passport + work permit, often same day.",
+    src:[["Service Canada — NAS","https://www.canada.ca/fr/emploi-developpement-social/services/numero-assurance-sociale.html"]] },
+  { keys:["ramq","santé","health","maladie","carte soleil","couvert"], topic:"RAMQ",
+    fr:"La RAMQ n'est PAS automatique pour tout le monde : l'entente France-Québec couvre les Français·es ; les autres nationalités doivent souscrire une assurance privée. Vérifie ton cas.",
+    en:"RAMQ is NOT automatic for everyone: the France-Quebec agreement covers French citizens; other nationalities need private insurance. Check your case.",
+    src:[["RAMQ — admissibilité","https://www.ramq.gouv.qc.ca"]] },
+  { keys:["budget","argent d'arrivée","combien prévoir","économies","coût de la vie","cost of living"], topic:"Budget",
+    fr:"Prévois un coussin pour les premières semaines : loyer + 1er mois, dépôt de meubles, épicerie, transport, téléphone, assurance. Ordre de grandeur à vérifier selon ton mode de vie.",
+    en:"Plan a cushion for the first weeks: rent + first month, furnishing, groceries, transit, phone, insurance. Ballpark only — verify for your lifestyle.",
+    src:[["Coût de la vie — Montréal","https://montreal.ca/"]] },
+  { keys:["assurance avant","assurance départ","assurance voyage","insurance before"], topic:"Assurance",
+    fr:"Avant le départ, une assurance santé/rapatriement est souvent exigée pour le PVT et te couvre pendant le délai de carence RAMQ. Compare les couvertures (soins, rapatriement, durée).",
+    en:"Before leaving, health/repatriation insurance is often required for the Working Holiday and covers you during the RAMQ waiting period. Compare coverage (care, repatriation, duration).",
+    src:[["IEC / PVT — Canada.ca","https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic.html"]] },
+  { keys:["logement","appartement","housing","louer","chercher un log","apartment"], topic:"Logement",
+    fr:"Deux voies : les petites annonces (Kijiji, Marketplace, rentals.ca, Kangalou…) OU un agent immobilier (souvent payé par le proprio). Ne verse jamais d'argent avant d'avoir visité.",
+    en:"Two routes: classifieds (Kijiji, Marketplace, rentals.ca, Kangalou…) OR a real-estate agent (usually paid by the owner). Never pay before visiting.",
+    src:[["TAL — bail & droits","https://www.tal.gouv.qc.ca"],["Rentals.ca","https://rentals.ca/montreal"]] },
+  { keys:["agent immobilier","agent","courtier","real-estate agent","broker"], topic:"Agent immobilier",
+    fr:"Oui, c'est souvent une bonne idée : l'agent cerne tes besoins et t'accompagne jusqu'au bail — et c'est normalement le PROPRIÉTAIRE qui le paie. Prends TON agent (pas celui de l'annonce) et un seul.",
+    en:"Yes, often a good idea: an agent scopes your needs and guides you to the lease — and the OWNER usually pays. Use YOUR own agent (not the listing's), and just one.",
+    src:[["Centris","https://www.centris.ca"],["realtor.ca","https://www.realtor.ca"]] },
+  { keys:["premières semaines","temporaire","hôtel","hotel","sous-location","first weeks","where to stay"], topic:"Arrivée",
+    fr:"Prévois une chambre / sous-location courte / hôtel pour les 2-4 premières semaines, le temps de bien chercher. Tip : vise à 15 min à pied d'un métro — sinon l'hiver, tu ne sors plus.",
+    en:"Plan a room / short sublet / hotel for the first 2-4 weeks while you search properly. Tip: aim within a 15-min walk of a metro — otherwise you won't go out in winter.",
+    src:[["TAL — cession de bail","https://www.tal.gouv.qc.ca"]] },
+  { keys:["banque","bank","compte","desjardins","eq","tangerine","wise"], topic:"Banque",
+    fr:"Ouvre un compte tôt (Desjardins a une offre nouveaux arrivants souvent citée). En ligne : EQ Bank, Tangerine. Multi-devises : Wise. Prends une carte de crédit pour bâtir ton historique.",
+    en:"Open an account early (Desjardins has a well-known newcomer offer). Online: EQ Bank, Tangerine. Multi-currency: Wise. Get a credit card to build your credit history.",
+    src:[["Desjardins","https://www.desjardins.com"],["Wise","https://wise.com/"]] },
+  { keys:["forfait","mobile","téléphone","phone plan","sim","internet","cellulaire"], topic:"Télécom",
+    fr:"Prends une SIM prépayée/sans engagement à l'arrivée (pas besoin d'historique de crédit). Combine TV+Internet+mobile pour économiser ; attention aux frais de résiliation. Numéro gratuit : Fongo, TextNow.",
+    en:"Grab a prepaid/no-commitment SIM on arrival (no credit history needed). Bundle TV+Internet+mobile to save; watch cancellation fees. Free number: Fongo, TextNow.",
+    src:[["CRTC","https://crtc.gc.ca/fra/accueil-home.htm"]] },
+  { keys:["transport","métro","metro","bus","stm","chrono","opus","déplacer","get around"], topic:"Transport",
+    fr:"Planifie avec l'app Chrono (ARTM) + carte OPUS. Entre villes : Orléans Express (bus), Via Rail (train), Amigo Express (covoiturage), FlixBus.",
+    en:"Plan with the Chrono app (ARTM) + OPUS card. Between cities: Orléans Express (bus), Via Rail (train), Amigo Express (carpool), FlixBus.",
+    src:[["STM","https://www.stm.info/fr"],["ARTM / Chrono","https://www.artm.quebec/application-mobile-chrono/"]] },
+  { keys:["hiver","winter","froid","neige","survivre"], topic:"Hiver",
+    fr:"L'hiver se prépare : bon manteau/bottes en couches, s'exposer à la lumière, rester actif et sortir malgré tout. Vivre près d'un métro change tout pour ne pas s'isoler.",
+    en:"Winter takes prep: good layered coat/boots, get daylight, stay active and go out anyway. Living near a metro changes everything to avoid isolating.",
+    src:[["Montréal.ca — hiver","https://montreal.ca/"]] },
+  { keys:["sortir","sorties","quoi faire","activité","things to do","seul","lonely","réseau","reseau","rencontrer","network"], topic:"Sorties / réseau",
+    fr:"Toujours de quoi faire, même l'hiver et à petit budget : bibliothèques, patinoires, YMCA, festivals. Antidote à l'isolement : t'inscrire vite à une activité récurrente.",
+    en:"Always something to do, even in winter and on a budget: libraries, skating rinks, YMCA, festivals. Antidote to isolation: sign up early for a recurring activity.",
+    src:[["Montréal.ca","https://montreal.ca/"],["Time Out Montréal","https://www.timeout.com/fr/montreal"]] },
+  { keys:["pvt par nationalité","nationalité","nationality","eic","pays","country"], topic:"PVT par nationalité",
+    fr:"Le PVT passe par l'EIC (36 pays), et les règles (âge, durée, participations) varient selon LA nationalité. Dis-moi la ou les tiennes et je compare — je ne suppose jamais « France » par défaut.",
+    en:"The Working Holiday runs through IEC (36 countries), and rules (age, duration, entries) vary by nationality. Tell me yours and I'll compare — I never assume 'France' by default.",
+    src:[["IEC — Canada.ca","https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada/eic.html"]] },
+  { keys:["arnaque","scam","fraude","fraud","escroquerie"], topic:"Arnaques",
+    fr:"Règle anti-arnaque logement : ne verse jamais d'argent avant d'avoir visité et signé ; méfie-toi des « propriétaires à l'étranger » et des prix trop beaux. En cas de doute, ralentis.",
+    en:"Anti-scam rule for housing: never pay before visiting and signing; beware 'landlords abroad' and too-good prices. When in doubt, slow down.",
+    src:[["TAL","https://www.tal.gouv.qc.ca"]] },
+  { keys:["emploi","job","cv","resume","travail","work","curriculum"], topic:"Emploi / CV",
+    fr:"Le CV québécois diffère du français : pas de photo ni d'âge, format concis, verbes d'action. Ton PVT te laisse travailler pour (presque) tout employeur. Réseautage = clé.",
+    en:"The Quebec resume differs from the French CV: no photo or age, concise format, action verbs. Your Working Holiday lets you work for (almost) any employer. Networking is key.",
+    src:[["Emploi-Québec","https://www.quebec.ca/emploi"]] }
+];
+const OFFTOPIC = ["météo new york","bitcoin","recette","code python","football","bourse","stock market"];
+
+function retrieve(q){
+  const s = q.toLowerCase();
+  if(OFFTOPIC.some(k=>s.includes(k))) return {offtopic:true};
+  let best=null, score=0;
+  for(const doc of MOCK){
+    const hits = doc.keys.filter(k=>s.includes(k)).length;
+    if(hits>score){score=hits;best=doc;}
+  }
+  return score>0 ? {doc:best} : {none:true};
+}
+
+/* ============================================================
+   Backend call — real /api/chat, with automatic fallback to the
+   client-side mock (so the page also works opened as a local file).
+   ============================================================ */
+const API_URL = "/api/chat";
+let backendDown = false; // once we know there's no server, stop retrying
+
+async function callBackend(message){
+  const r = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, lang: LANG })
+  });
+  const d = await r.json(); // throws if not JSON -> caught by caller
+  return { text: d.reply, sources: d.sources || [], unanswered: !!d.unanswered, rest: !!d.rest };
+}
+
+/* ============================================================
+   MOCK backend — used as fallback when /api/chat is unreachable
+   ============================================================ */
+const DAILY_CAP = 30;
+let msgCount = 0;
+
+async function mockChat(message){
+  await new Promise(r=>setTimeout(r, 450 + Math.random()*450));
+  if(msgCount >= DAILY_CAP) return {rest:true};
+  msgCount++;
+  const r = retrieve(message);
+  if(r.offtopic) return {text:I18N[LANG].offtopic};
+  if(r.none)     return {text:I18N[LANG].unanswered, unanswered:true};
+  return { text:r.doc[LANG], sources:r.doc.src };
+}
+
+/* ============================================================
+   UI + recap
+   ============================================================ */
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
+let history = []; // {who:'you'|'patrick', text, sources}
+
+function bubble(text, who, sources){
+  const d = document.createElement("div");
+  d.className = "msg " + (who==="you"?"u":"p");
+  d.innerHTML = escapeHtml(text);
+  if(sources && sources.length){
+    const s = document.createElement("div");
+    s.className = "sources";
+    s.innerHTML = "<b>"+I18N[LANG].sources+"</b>";
+    for(const [name,url] of sources){
+      const a = document.createElement("a");
+      a.href = url; a.target="_blank"; a.rel="noopener"; a.textContent = "↗ "+name;
+      s.appendChild(a);
+    }
+    d.appendChild(s);
+  }
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+function escapeHtml(t){return t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+async function onSend(e){
+  if(e && e.preventDefault) e.preventDefault();
+  const q = input.value.trim();
+  if(!q) return false;
+  bubble(q,"you"); history.push({who:"you",text:q});
+  input.value=""; sendBtn.disabled=true;
+  const t = document.createElement("div");
+  t.className="typing"; t.textContent=I18N[LANG].typing; chat.appendChild(t);
+  chat.scrollTop = chat.scrollHeight;
+
+  let res;
+  if (backendDown){
+    res = await mockChat(q);                 // already know there's no server
+  } else {
+    try { res = await callBackend(q); }      // try the real /api/chat first
+    catch { backendDown = true; res = await mockChat(q); } // fall back to mock
+  }
+  t.remove();
+  if(res.rest){ const r=document.createElement("div"); r.className="rest"; r.textContent=I18N[LANG].rest; chat.appendChild(r); }
+  else { bubble(res.text,"patrick",res.sources); history.push({who:"patrick",text:res.text,sources:res.sources}); }
+  // Real hook: if(res.unanswered) POST {question, ts} to logging endpoint (no PII).
+  sendBtn.disabled=false; input.focus();
+  return false;
+}
+
+function renderBlocks(){
+  const wrap = document.getElementById("blocks"); wrap.innerHTML="";
+  for(const b of BLOCKS[LANG]){
+    const div = document.createElement("div"); div.className="block";
+    const h = document.createElement("h3"); h.textContent=b.t; div.appendChild(h);
+    b.q.forEach(q=>{ const c=document.createElement("span"); c.className="chip"; c.textContent=q;
+      c.onclick=()=>{ input.value=q; onSend(); }; div.appendChild(c); });
+    wrap.appendChild(div);
+  }
+}
+
+/* ---- recap (copy / download), no PII ---- */
+function buildRecap(){
+  if(!history.length) return "";
+  const L=I18N[LANG]; const d=new Date().toISOString().slice(0,10);
+  let out = "# "+L.recapTitle+"\n_"+d+"_\n\n";
+  for(const m of history){
+    out += (m.who==="you" ? "**"+L.recapYou+" :** " : "**"+L.recapPat+" :** ") + m.text + "\n";
+    if(m.sources && m.sources.length){ out += m.sources.map(([n,u])=>"  - "+n+" : "+u).join("\n") + "\n"; }
+    out += "\n";
+  }
+  return out.trim()+"\n";
+}
+async function copyRecap(){
+  const r=buildRecap(); if(!r) return toast(I18N[LANG].nothing);
+  try{ await navigator.clipboard.writeText(r); toast(I18N[LANG].copied); }
+  catch{ const ta=document.createElement("textarea"); ta.value=r; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove(); toast(I18N[LANG].copied); }
+}
+function downloadRecap(){
+  const r=buildRecap(); if(!r) return toast(I18N[LANG].nothing);
+  const blob=new Blob([r],{type:"text/markdown"}); const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="patrick-recap.md"; a.click();
+  URL.revokeObjectURL(url); toast(I18N[LANG].downloaded);
+}
+function resetChat(){ history=[]; msgCount=0; chat.innerHTML=""; bubble(I18N[LANG].greeting,"patrick"); }
+
+let toastTimer=null;
+function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),1600); }
+
+function setLang(l){
+  LANG=l;
+  document.getElementById("fr").classList.toggle("on",l==="fr");
+  document.getElementById("en").classList.toggle("on",l==="en");
+  document.documentElement.lang=l;
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.innerHTML=I18N[l][el.dataset.i18n]);
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>el.placeholder=I18N[l][el.dataset.i18nPh]);
+  renderBlocks();
+}
+
+/* boot */
+setLang("fr");
+bubble(I18N.fr.greeting,"patrick");
+</script>
+</body>
+</html>

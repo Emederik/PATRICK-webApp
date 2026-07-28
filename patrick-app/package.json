@@ -1,0 +1,15 @@
+{
+  "name": "patrick-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Patrick — chatbot RAG bilingue pour PVTistes à Montréal (front + /api/chat)",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node api/chat.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3",
+    "@aws-sdk/client-bedrock-runtime": "^3",
+    "dotenv": "^16"
+  }
+}
