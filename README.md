@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/Patrick_Featured_Card.jpg" alt="Patrick — Your Personal Pro Guide for PVT Holders" width="680">
+</p>
+
 # Patrick — Architecture, organisation & outils
 
 *Assistant conversationnel bilingue (FR/EN) qui aide les jeunes en PVT / Working Holiday à préparer
