@@ -37,6 +37,28 @@ La STM recommande **Chrono** ou l'appli **Transit**.
 > Tarifs et titres changent régulièrement — vérifie sur stm.info / artm.quebec.
 > Le vélo en libre-service **BIXI** (belle saison) complète bien le réseau pour les courtes distances.
 
+### [transport-00b] Vélo : réseau cyclable & BIXI
+
+- **audience** : commun
+- **nationalite** : commun
+- **tags** : velo, bixi, cyclable, piste, rev, ete, ecolo, courtes-distances
+- **source** : BIXI Montréal (bixi.com) — vérifié 2026-07-28
+- **dernière_vérif** : 2026-07-28
+- **confiance** : haute
+
+Montréal est une **ville très cyclable** : un vaste **réseau de pistes** (dont le **REV**, réseau
+express vélo) et beaucoup de rues adaptées. À la belle saison, le vélo est souvent le moyen le plus
+rapide **et** agréable de se déplacer — et le moins cher.
+
+**BIXI** est le **vélo en libre-service** de Montréal (stations partout, vélos classiques et
+**électriques**) : parfait sans posséder de vélo. Abonnement saisonnier ou trajets à l'unité, via
+l'appli BIXI (repérable aussi dans **Chrono**). Saison : environ **avril à novembre** (service
+très réduit ou arrêté l'hiver).
+
+- **BIXI** : https://bixi.com/fr/
+
+> ⚠️ À vélo l'hiver : prudence (neige, verglas). Beaucoup rangent le vélo et repassent au métro/bus.
+
 ## B. Se déplacer entre les villes (intercité)
 
 ### [transport-01] Bus, train et covoiturage au Québec / au Canada

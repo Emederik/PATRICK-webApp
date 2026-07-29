@@ -71,3 +71,34 @@
 3. Puis **domaine custom** (#3) avant le post LinkedIn.
 
 > Pour préparer : repère **2-3 designs que tu aimes** (screenshots ou liens) et pense à l'**ambiance** que tu veux pour Patrick. Le reste, on le déroule ensemble.
+
+---
+
+## 🎨 Design — décisions verrouillées (28/07)
+
+Direction retenue = **« mix »** : chatbot mint moderne + chaleur + photo de Montréal. Mode clair, mobile d'abord.
+
+- **Bannière d'accueil** : photo skyline de Montréal (**la photo d'Em**, réchauffée par un filtre, © intégré). Crédit **« © Em Barea »** petit, vertical, bas-droite, **pivoté 180°**.
+- **Avatar** : le personnage **Patrick** (recadré).
+- **Toggle FR | EN** visible (les deux, cliquables) en haut de la bannière.
+- **Textes d'accueil** :
+  - « Bienvenue en PVT au Québec ! »
+  - « Je suis ton guide montréalais qui t'aide dans tes démarches. »
+  - (plus bas) « Pose-moi tes questions ou choisis un thème pour commencer. »
+- **Barre de question** remontée, juste sous ce titre. (Plus de « dis-moi ta nationalité » à l'accueil.)
+- **4 blocs** (icônes **Fluent 3D colorées**, Iconify `fluent-emoji:*`) :
+  1. **Avant d'arriver / Destination Montréal** → ✈️ `airplane-departure`
+  2. **T'installer** → 🏠 `house-with-garden`
+  3. **Démarches & documents** → 📝 `memo`
+  4. **Vivre à Montréal** → 🎭 `performing-arts` (masques)
+- **Navigation** : cliquer un bloc → **ouvre une page dédiée** avec une **photo du thème en haut** + des **questions cliquables**. (Il faudra 4 photos de thème, libres de droits.)
+- **Accent** : mint/teal. **Icônes** : famille Fluent 3D (cohérente).
+
+### À faire demain
+- Répartition des **questions par bloc** (quelles questions dans chaque page).
+- Choisir les **4 photos de thème** (ex. parasols colorés pour « Vivre à Montréal »).
+- Puis **implémentation complète** dans `index.html` (garde chat, sources, Markdown, FR/EN, récap).
+
+### Assets déjà prêts
+- `patrick-app/assets/montreal-hero.jpg` (photo réchauffée + © EXIF)
+- `patrick-app/assets/patrick-avatar.jpg` (avatar Patrick)
