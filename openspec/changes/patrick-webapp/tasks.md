@@ -50,8 +50,8 @@
 - [ ] 6.2 Veille sujets sensibles au temps (tirages PVT, deals) via web search
 
 ## 7. Déploiement & garde-fous — mixte
-- [ ] 7.1 Déployer front + `/api/chat` (host choisi en 1.5)
-- [ ] 7.2 Identifiants AWS en variables d'env (jamais côté client)
+- [x] 7.1 Déployé sur **Vercel** (repo GitHub `PATRICK-webApp`, root `patrick-app`, preset Other) — **EN LIGNE** ✅
+- [x] 7.2 Identifiants AWS en variables d'env Vercel (jamais côté client) ✅
 - [ ] 7.3 **AWS Budgets + hard spend limit** + alerte
 - [ ] 7.4 Disclaimer + note de confidentialité visibles à l'écran
 - [ ] 7.5 AWS Budgets (alerte email 50/80/100 %) + Cost Anomaly Detection — garde-fou coût

@@ -34,11 +34,24 @@
   .chat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:280px}
   .msg{max-width:88%;padding:10px 13px;border-radius:12px;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
-  .msg.p{background:var(--panel2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.p{background:var(--panel2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px;white-space:normal}
   .msg.u{background:var(--user);align-self:flex-end;border-bottom-right-radius:4px}
   .sources{margin-top:8px;font-size:12px;color:var(--muted)}
   .sources a{color:#7fc4ff;text-decoration:none;display:block;margin-top:2px}
   .sources a:hover{text-decoration:underline}
+  /* markdown rendering inside Patrick's bubbles */
+  .msg .mdh{font-weight:700;margin:7px 0 2px;line-height:1.3}
+  .msg .mdh1{font-size:15.5px}
+  .msg .mdh2{font-size:14.5px}
+  .msg .mdh3,.msg .mdh4,.msg .mdh5,.msg .mdh6{font-size:14px}
+  .msg .mdp{margin:4px 0}
+  .msg ul,.msg ol{margin:4px 0 4px 20px;padding:0}
+  .msg li{margin:2px 0}
+  .msg hr{border:0;border-top:1px solid var(--line);margin:9px 0}
+  .msg strong{color:#fff;font-weight:700}
+  .msg code{background:#0f1720;padding:1px 5px;border-radius:4px;font-size:13px}
+  .msg a{color:#7fc4ff;text-decoration:none}
+  .msg a:hover{text-decoration:underline}
   .typing{font-size:13px;color:var(--muted);font-style:italic}
   /* topic blocks */
   .blocks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
@@ -111,7 +124,7 @@ const I18N = {
   fr:{ tagline:"Ton guide PVT / Working Holiday à Montréal",
     disclaimer:"ℹ️ Info générale, <b>pas un conseil officiel</b> (immigration, santé, juridique, financier). Vérifie toujours auprès des sources officielles (IRCC, RAMQ, TAL, SAAQ). Aucune donnée personnelle n'est conservée.",
     send:"Envoyer", placeholder:"Pose ta question à Patrick…",
-    foot:"Prototype — réponses simulées (données de démonstration). Backend RAG (Bedrock) à venir.",
+    foot:"Patrick s'appuie sur des sources officielles — vérifie toujours avant d'agir. Aucune donnée personnelle conservée.",
     greeting:"Salut 👋 Je suis Patrick. Pour te répondre juste, dis-moi ta (ou tes) nationalité(s), et pioche une question ci-dessous ou écris la tienne.",
     typing:"Patrick réfléchit…",
     unanswered:"Excellente question — je la note pour notre équipe. Je préfère ne pas deviner sur ce point plutôt que te donner une info non vérifiée. 🙏",
@@ -123,7 +136,7 @@ const I18N = {
   en:{ tagline:"Your Working Holiday / PVT guide to Montreal",
     disclaimer:"ℹ️ General info, <b>not official advice</b> (immigration, health, legal, financial). Always verify with official sources (IRCC, RAMQ, TAL, SAAQ). No personal data is stored.",
     send:"Send", placeholder:"Ask Patrick a question…",
-    foot:"Prototype — simulated answers (demo data). RAG backend (Bedrock) coming.",
+    foot:"Patrick draws on official sources — always verify before acting. No personal data stored.",
     greeting:"Hi 👋 I'm Patrick. To answer you right, tell me your nationality (or nationalities), and pick a question below or type your own.",
     typing:"Patrick is thinking…",
     unanswered:"Great question — I'm logging it for our team. I'd rather not guess than give you unverified info. 🙏",
@@ -275,7 +288,7 @@ let history = []; // {who:'you'|'patrick', text, sources}
 function bubble(text, who, sources){
   const d = document.createElement("div");
   d.className = "msg " + (who==="you"?"u":"p");
-  d.innerHTML = escapeHtml(text);
+  d.innerHTML = (who==="you") ? escapeHtml(text) : mdToHtml(text);
   if(sources && sources.length){
     const s = document.createElement("div");
     s.className = "sources";
@@ -291,6 +304,35 @@ function bubble(text, who, sources){
   chat.scrollTop = chat.scrollHeight;
 }
 function escapeHtml(t){return t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+/* Lightweight, safe Markdown → HTML (escapes first, then formats). */
+function inlineMd(s){
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return s;
+}
+function mdToHtml(md){
+  const lines = escapeHtml(md).split(/\r?\n/);
+  let html = "", list = null;
+  const closeList = () => { if (list){ html += `</${list}>`; list = null; } };
+  for (const raw of lines){
+    const line = raw.replace(/\s+$/,"");
+    if (!line.trim()){ closeList(); continue; }
+    if (/^\s*---+\s*$/.test(line)){ closeList(); html += "<hr>"; continue; }
+    const h = line.match(/^\s*(#{1,6})\s+(.*)$/);
+    if (h){ closeList(); html += `<div class="mdh mdh${h[1].length}">${inlineMd(h[2])}</div>`; continue; }
+    const ul = line.match(/^\s*[-*]\s+(.*)$/);
+    if (ul){ if (list!=="ul"){ closeList(); html += "<ul>"; list="ul"; } html += `<li>${inlineMd(ul[1])}</li>`; continue; }
+    const ol = line.match(/^\s*\d+\.\s+(.*)$/);
+    if (ol){ if (list!=="ol"){ closeList(); html += "<ol>"; list="ol"; } html += `<li>${inlineMd(ol[1])}</li>`; continue; }
+    closeList();
+    html += `<div class="mdp">${inlineMd(line)}</div>`;
+  }
+  closeList();
+  return html;
+}
 
 async function onSend(e){
   if(e && e.preventDefault) e.preventDefault();

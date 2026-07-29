@@ -6,9 +6,15 @@
 
 ## 🎯 Où on en est
 
-**Le cœur de Patrick fonctionne de bout en bout, en local :** un vrai chatbot RAG bilingue
-(question → recherche dans le corpus → Claude Haiku répond en « Patrick »), branché sur AWS Bedrock.
-Le biais « France par défaut » est corrigé (Patrick demande la/les nationalité(s)).
+**Patrick est EN LIGNE, publiquement, sur Vercel.** 🎉 Un vrai chatbot RAG bilingue
+(question → recherche dans le corpus → Claude Haiku répond en « Patrick »), branché sur AWS Bedrock +
+Knowledge Base. Le biais « France par défaut » est corrigé (Patrick demande la/les nationalité(s),
+gère la bi-nationalité, cite ses sources). Testé en prod : la question RAMQ déclenche bien la demande
+de nationalité + statut. ✅
+
+**Hébergement :** code sur GitHub (repo privé **`Emederik/PATRICK-webApp`**) → déployé sur **Vercel**
+(root directory `patrick-app`, framework preset **Other**, variables d'env AWS+BEDROCK côté Vercel).
+Chaque `git push` depuis GitHub Desktop redéploie automatiquement.
 
 ## ✅ Ce qui est fait
 
@@ -35,12 +41,19 @@ npm run dev
 → ouvre **http://localhost:3000**. Arrêter le serveur : **Ctrl+C**.
 *(Le serveur doit afficher `Bedrock mode: ON`. Ne rien taper d'autre dans cette fenêtre pendant qu'il tourne.)*
 
-## ⏭️ Ce qui reste (rien d'urgent)
+## ✅ Fait aussi (session du 28/07 après-midi)
 
-1. **AWS Budgets** — cap de coût + alertes email (Billing → Budgets, ~20-50 $/mois, seuils 50/80/100 %). *Recommandé de le faire tôt.*
-2. **Déploiement** — passer de `localhost` à une **URL publique** (Vercel/Netlify) : héberger le front + `/api/chat`, remettre les variables d'env (AWS + BEDROCK_*) côté hébergeur. → grande étape suivante.
-3. **Phase 2** — feedback anonyme 👍/👎 + « +4 questions contre feedback » (déjà noté : `design.md §13`, tasks `9.x`).
-4. Optionnel : renforcer `ramq-02` (mener avec la règle universelle avant le cas France) ; corriger le bouton récap après câblage ; tests multi-nationalités.
+- **Protection coût** : AWS Budgets (20 $ USD/mois, alertes email) + Cost Anomaly Detection (résumé quotidien, seuil 8 $).
+- **Backend réel** : `chat.js` branché sur Bedrock (Retrieve KB + Converse Haiku + prompt système).
+- **Déploiement** : GitHub (privé) + Vercel, en ligne et testé.
+
+## ⏭️ Ce qui reste (tout optionnel — Patrick fonctionne déjà)
+
+1. 🎨 **Rendu Markdown dans le front** — actuellement les `#`/`**` s'affichent en texte brut ; ajouter un mini-parseur Markdown rendrait les réponses bien plus jolies. *(Quick win recommandé.)*
+2. 🌐 **Domaine plus propre** — l'URL Vercel est un identifiant aléatoire ; ajouter un domaine custom (ou renommer le projet Vercel).
+3. 💬 **Phase 2** — feedback anonyme 👍/👎 + « +4 questions contre feedback » (`design.md §13`, tasks `9.x`).
+4. 🔒 **Durcir le rate-limit** — stockage partagé (Redis/Supabase) pour un vrai plafond en prod serverless.
+5. 📝 Optionnel : renforcer `ramq-02` (mener avec la règle universelle avant le cas France) ; tests multi-nationalités.
 
 ## ⚠️ À garder en tête
 
