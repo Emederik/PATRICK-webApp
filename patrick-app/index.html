@@ -48,6 +48,9 @@
   .msg ul,.msg ol{margin:4px 0 4px 20px;padding:0}
   .msg li{margin:2px 0}
   .msg hr{border:0;border-top:1px solid var(--line);margin:9px 0}
+  .msg table.mdt{border-collapse:collapse;margin:6px 0;font-size:13.5px;width:100%}
+  .msg .mdt th,.msg .mdt td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+  .msg .mdt th{background:#0f1720;font-weight:700}
   .msg strong{color:#fff;font-weight:700}
   .msg code{background:#0f1720;padding:1px 5px;border-radius:4px;font-size:13px}
   .msg a{color:#7fc4ff;text-decoration:none}
@@ -315,20 +318,32 @@ function inlineMd(s){
 }
 function mdToHtml(md){
   const lines = escapeHtml(md).split(/\r?\n/);
-  let html = "", list = null;
+  let html = "", list = null, i = 0;
   const closeList = () => { if (list){ html += `</${list}>`; list = null; } };
-  for (const raw of lines){
-    const line = raw.replace(/\s+$/,"");
-    if (!line.trim()){ closeList(); continue; }
-    if (/^\s*---+\s*$/.test(line)){ closeList(); html += "<hr>"; continue; }
+  const isRow = s => /^\s*\|(.+)\|\s*$/.test(s);
+  const isSep = s => /^\s*\|?[\s:|-]+\|?\s*$/.test(s) && /-/.test(s);
+  const cells = s => s.trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(c=>c.trim());
+  while (i < lines.length){
+    const line = lines[i].replace(/\s+$/,"");
+    if (!line.trim()){ closeList(); i++; continue; }
+    // table: header row followed by a separator row
+    if (isRow(line) && i+1 < lines.length && isSep(lines[i+1])){
+      closeList();
+      const head = cells(line); i += 2;
+      let rows = "";
+      while (i < lines.length && isRow(lines[i])){ rows += "<tr>" + cells(lines[i]).map(c=>`<td>${inlineMd(c)}</td>`).join("") + "</tr>"; i++; }
+      html += `<table class="mdt"><thead><tr>${head.map(c=>`<th>${inlineMd(c)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+      continue;
+    }
+    if (/^\s*---+\s*$/.test(line)){ closeList(); html += "<hr>"; i++; continue; }
     const h = line.match(/^\s*(#{1,6})\s+(.*)$/);
-    if (h){ closeList(); html += `<div class="mdh mdh${h[1].length}">${inlineMd(h[2])}</div>`; continue; }
+    if (h){ closeList(); html += `<div class="mdh mdh${h[1].length}">${inlineMd(h[2])}</div>`; i++; continue; }
     const ul = line.match(/^\s*[-*]\s+(.*)$/);
-    if (ul){ if (list!=="ul"){ closeList(); html += "<ul>"; list="ul"; } html += `<li>${inlineMd(ul[1])}</li>`; continue; }
+    if (ul){ if (list!=="ul"){ closeList(); html += "<ul>"; list="ul"; } html += `<li>${inlineMd(ul[1])}</li>`; i++; continue; }
     const ol = line.match(/^\s*\d+\.\s+(.*)$/);
-    if (ol){ if (list!=="ol"){ closeList(); html += "<ol>"; list="ol"; } html += `<li>${inlineMd(ol[1])}</li>`; continue; }
+    if (ol){ if (list!=="ol"){ closeList(); html += "<ol>"; list="ol"; } html += `<li>${inlineMd(ol[1])}</li>`; i++; continue; }
     closeList();
-    html += `<div class="mdp">${inlineMd(line)}</div>`;
+    html += `<div class="mdp">${inlineMd(line)}</div>`; i++;
   }
   closeList();
   return html;
