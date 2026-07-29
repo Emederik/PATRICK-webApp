@@ -27,5 +27,8 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
+# === Sources tierces / privées — NE JAMAIS publier (gardées en local seulement) ===
+_prive-local/
+
 # === Divers OpenSpec / temp ===
 .openspec-test-*
