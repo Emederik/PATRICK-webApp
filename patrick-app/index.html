@@ -125,7 +125,7 @@
 <script>
 /* ============================ i18n ============================ */
 const I18N = {
-  fr:{ disclaimer:"ℹ️ Info générale, <b>pas un conseil officiel</b> (immigration, santé, juridique, financier). Vérifie toujours auprès des sources officielles. Aucune donnée personnelle n'est conservée.",
+  fr:{ disclaimer:"ℹ️ Info générale, <b>pas un conseil officiel</b> (immigration, santé, juridique, financier). Vérifie toujours auprès des sources officielles. Patrick ne te demande <b>aucune donnée identifiante</b> ; tes questions peuvent être enregistrées de façon <b>anonyme</b> pour améliorer le service, et les échanges transitent par nos hébergeurs (Vercel/AWS).",
     welcomeT:"Bienvenue en PVT au Québec !",
     welcomeS:"Je suis ton guide montréalais qui t'aide dans tes démarches.",
     heading:"Pose-moi tes questions ou choisis un thème pour commencer.",
@@ -145,7 +145,7 @@ const I18N = {
       {cl:"Démarches & documents", q:"Quelles démarches et documents faire : NAS, RAMQ, permis de conduire, banque, téléphone ?"},
       {cl:"Vivre à Montréal", q:"Que faire à Montréal : restos, sorties, activités, loisirs ?"}
     ]},
-  en:{ disclaimer:"ℹ️ General info, <b>not official advice</b> (immigration, health, legal, financial). Always verify with official sources. No personal data is stored.",
+  en:{ disclaimer:"ℹ️ General info, <b>not official advice</b> (immigration, health, legal, financial). Always verify with official sources. Patrick never asks for <b>identifying personal data</b>; your questions may be logged <b>anonymously</b> to improve the service, and messages pass through our hosts (Vercel/AWS).",
     welcomeT:"Welcome to your Working Holiday in Québec!",
     welcomeS:"I'm your Montreal guide, here to help with your paperwork.",
     heading:"Ask me anything, or pick a theme to start.",
@@ -188,7 +188,10 @@ let LANG = "fr";
 /* ============================ Markdown ============================ */
 function escapeHtml(t){return t.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
 function inlineMd(s){
-  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (m,txt,url)=>{
+    const safe = url.replace(/"/g,"%22").replace(/'/g,"%27").replace(/[<>]/g,"");
+    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${txt}</a>`;
+  });
   s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
   s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>');
   s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
@@ -272,8 +275,10 @@ async function onSend(e){
   input.value=""; sendBtn.disabled=true;
   const t=document.createElement("div"); t.className="typing"; t.textContent=I18N[LANG].typing; chat.appendChild(t); chat.scrollTop=chat.scrollHeight;
   let res;
-  if(backendDown){ res=await mockChat(q); }
-  else { try{ res=await callBackend(q); }catch{ backendDown=true; res=await mockChat(q); } }
+  let usedMock=false;
+  if(backendDown){ res=await mockChat(q); usedMock=true; }
+  else { try{ res=await callBackend(q); }catch{ backendDown=true; res=await mockChat(q); usedMock=true; } }
+  if(usedMock && res && !res.rest){ res.text=(LANG==="en"?"⚠️ *Offline mode — Patrick's full knowledge base is temporarily unavailable; this is a limited built-in answer.*\n\n":"⚠️ *Mode hors-ligne — la base de connaissances de Patrick est momentanément indisponible ; réponse limitée.*\n\n")+(res.text||""); }
   t.remove();
   if(res.rest){ const r=document.createElement("div"); r.className="rest"; r.textContent=I18N[LANG].rest; chat.appendChild(r); }
   else { bubble(res.text,"patrick",res.sources); history.push({who:"patrick",text:res.text,sources:res.sources}); }
