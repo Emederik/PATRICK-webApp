@@ -69,7 +69,7 @@ l'API **Converse** → réponse + **sources citées** → affichée avec rendu M
 
 ```
 PATRICK webApp/
-├── corpus/                       # 🧠 LE CARBURANT — 15 fiches .md vérifiées + README (schéma + maintenance)
+├── corpus/                       # 🧠 LE CARBURANT — 17 fiches .md vérifiées + README (schéma + maintenance)
 ├── patrick-app/                  # 🌐 LA WEB APP
 │   ├── index.html                #    Front : chat FR/EN, 4 blocs, récap, rendu Markdown
 │   ├── api/

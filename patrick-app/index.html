@@ -288,8 +288,10 @@ function renderTiles(){
   const wrap=document.getElementById("tiles"); wrap.innerHTML=""; wrap.style.display="grid";
   I18N[LANG].tiles.forEach((t,i)=>{
     const d=document.createElement("div"); d.className="tile";
+    d.setAttribute("role","button"); d.setAttribute("tabindex","0"); d.setAttribute("aria-label",t.cl);
     d.innerHTML=`<div class="ic"><iconify-icon icon="${TILE_ICONS[i]}"></iconify-icon></div><div class="cl">${t.cl}</div>`;
     d.onclick=()=>showFeatured(i);
+    d.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); showFeatured(i); } };
     wrap.appendChild(d);
   });
 }
