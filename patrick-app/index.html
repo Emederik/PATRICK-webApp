@@ -113,7 +113,7 @@
     </form>
     <div class="tiles" id="tiles"></div>
     <div class="bar">
-      <button class="ghost" onclick="copyRecap()" data-i18n="copy">📋 Copier le récap</button>
+      <button class="ghost" onclick="showRecapModal()" data-i18n="copy">🧾 Ma synthèse</button>
       <button class="ghost" onclick="downloadRecap()" data-i18n="download">⬇️ Télécharger (.md)</button>
       <button class="ghost" onclick="resetChat()" data-i18n="reset">↺ Réinitialiser</button>
     </div>
@@ -136,7 +136,7 @@ const I18N = {
     rest:"Patrick se repose 😴 — reviens plus tard (plafond atteint).",
     sources:"Sources :",
     offtopic:"Ceci n'est pas dans mes attributions : je me concentre sur le PVT et l'installation à Montréal.",
-    copy:"📋 Copier le récap", download:"⬇️ Télécharger (.md)", reset:"↺ Réinitialiser",
+    copy:"🧾 Ma synthèse", download:"⬇️ Télécharger (.md)", reset:"↺ Réinitialiser",
     copied:"Récap copié ✓", downloaded:"Récap téléchargé ✓", nothing:"Rien à récapituler pour l'instant",
     recapTitle:"Récap de mon échange avec Patrick", recapYou:"Moi", recapPat:"Patrick",
     tiles:[
@@ -156,7 +156,7 @@ const I18N = {
     rest:"Patrick is resting 😴 — come back later (cap reached).",
     sources:"Sources:",
     offtopic:"That's outside my scope: I focus on the Working Holiday and settling in Montreal.",
-    copy:"📋 Copy recap", download:"⬇️ Download (.md)", reset:"↺ Reset",
+    copy:"🧾 My summary", download:"⬇️ Download (.md)", reset:"↺ Reset",
     copied:"Recap copied ✓", downloaded:"Recap downloaded ✓", nothing:"Nothing to recap yet",
     recapTitle:"Recap of my chat with Patrick", recapYou:"Me", recapPat:"Patrick",
     tiles:[
@@ -300,7 +300,7 @@ function showFeatured(i){
     b.style.cssText="display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin:0 0 8px;font-size:13.5px;line-height:1.3;color:var(--ink);cursor:pointer;font-family:inherit";
     b.onmouseover=()=>b.style.borderColor="var(--accent)";
     b.onmouseout=()=>b.style.borderColor="var(--line)";
-    b.onclick=()=>{ input.value=q; onSend(); };
+    b.onclick=()=>{ input.value=q; onSend(); renderTiles(); };
     wrap.appendChild(b);
   });
   const back=document.createElement("button"); back.type="button"; back.textContent=BACK_LABEL[LANG];
@@ -312,14 +312,49 @@ function showFeatured(i){
 /* ---- recap ---- */
 function buildRecap(){
   if(!history.length)return"";
-  const L=I18N[LANG], d=new Date().toISOString().slice(0,10);
-  let out="# "+L.recapTitle+"\n_"+d+"_\n\n";
+  const d=new Date().toISOString().slice(0,10);
+  const qs=history.filter(m=>m.who==="you").map(m=>m.text);
+  const allSrc=[].concat(...history.map(m=>m.sources||[]));
+  const links=[...new Map(allSrc.map(s=>[s[1],s])).values()];
+  const T = LANG==="en" ? {
+    title:"My Patrick roadmap", asked:"Questions I asked", key:"Key answers & recommendations",
+    res:"Useful resources", next:"To clarify / next steps",
+    nextTxt:"Double-check anything sensitive (immigration, health, lease, money, taxes) with the official source or a professional — rules change."
+  } : {
+    title:"Ma feuille de route — Patrick", asked:"Questions posées", key:"Réponses & recommandations clés",
+    res:"Ressources utiles", next:"À clarifier / prochaines étapes",
+    nextTxt:"Vérifie les points sensibles (immigration, santé, bail, argent, impôts) auprès de la source officielle ou d'un pro — les règles changent."
+  };
+  let out="# "+T.title+"\n_"+d+"_\n\n";
+  out+="## ❓ "+T.asked+"\n"+(qs.length?qs.map(q=>"- "+q).join("\n"):"—")+"\n\n";
+  out+="## 💡 "+T.key+"\n";
+  let lastQ="";
   for(const m of history){
-    out+=(m.who==="you"?"**"+L.recapYou+" :** ":"**"+L.recapPat+" :** ")+m.text+"\n";
-    if(m.sources&&m.sources.length){ out+=m.sources.map(([n,u])=>"  - "+n+" : "+u).join("\n")+"\n"; }
-    out+="\n";
+    if(m.who==="you"){ lastQ=m.text; }
+    else { out+=(lastQ?"**"+lastQ+"**\n":"")+m.text.trim()+"\n\n"; lastQ=""; }
   }
+  if(links.length){ out+="## 🔗 "+T.res+"\n"+links.map(([n,u])=>"- "+n+" : "+u).join("\n")+"\n\n"; }
+  out+="## ✅ "+T.next+"\n- "+T.nextTxt+"\n";
   return out.trim()+"\n";
+}
+function showRecapModal(){
+  const md=buildRecap(); if(!md) return toast(I18N[LANG].nothing);
+  const old=document.getElementById("recapOv"); if(old) old.remove();
+  const ov=document.createElement("div"); ov.id="recapOv";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(15,30,35,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px";
+  const box=document.createElement("div");
+  box.style.cssText="background:#fff;max-width:640px;width:100%;max-height:85vh;overflow:auto;border-radius:16px;padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.3)";
+  const pre=document.createElement("pre");
+  pre.style.cssText="white-space:pre-wrap;font-family:inherit;font-size:13.5px;line-height:1.5;color:var(--ink);margin:0 0 14px";
+  pre.textContent=md;
+  const bar=document.createElement("div"); bar.style.cssText="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap";
+  const mk=(label,fn,ghost)=>{const b=document.createElement("button");b.type="button";b.textContent=label;b.style.cssText="border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;"+(ghost?"background:none;color:var(--accent);border:1px solid var(--line)":"background:var(--accent);color:#fff;border:none");b.onclick=fn;return b;};
+  bar.appendChild(mk(LANG==="en"?"📋 Copy":"📋 Copier", async()=>{ try{await navigator.clipboard.writeText(md);}catch{const ta=document.createElement("textarea");ta.value=md;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();} toast(I18N[LANG].copied); }, false));
+  bar.appendChild(mk(LANG==="en"?"⬇️ Download":"⬇️ Télécharger", ()=>downloadRecap(), true));
+  bar.appendChild(mk(LANG==="en"?"Close":"Fermer", ()=>ov.remove(), true));
+  box.appendChild(pre); box.appendChild(bar); ov.appendChild(box);
+  ov.onclick=(e)=>{ if(e.target===ov) ov.remove(); };
+  document.body.appendChild(ov);
 }
 async function copyRecap(){const r=buildRecap();if(!r)return toast(I18N[LANG].nothing);try{await navigator.clipboard.writeText(r);toast(I18N[LANG].copied);}catch{const ta=document.createElement("textarea");ta.value=r;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast(I18N[LANG].copied);}}
 function downloadRecap(){const r=buildRecap();if(!r)return toast(I18N[LANG].nothing);const b=new Blob([r],{type:"text/markdown"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download="patrick-recap.md";a.click();URL.revokeObjectURL(u);toast(I18N[LANG].downloaded);}

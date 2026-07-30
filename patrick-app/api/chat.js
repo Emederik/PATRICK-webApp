@@ -31,7 +31,7 @@ const CONFIG = {
   PER_IP_MAX: 12,
   PER_IP_WINDOW_MS: 60 * 60 * 1000,   // 1 hour
   DAILY_GLOBAL_MAX: 500,
-  MAX_TOKENS: 500,                     // caps generated length (cost)
+  MAX_TOKENS: 1100,                    // caps generated length (cost) — 1100 évite les réponses coupées
   TOP_K: 5                             // chunks retrieved from the KB
 };
 
