@@ -1,0 +1,73 @@
+{
+  "_comment": "10 questions vedettes par icône (catégorie). Affichées quand l'utilisateur clique une icône pour démarrer. 'icon' = glyphe à choisir (TBD). 'fiche' = fiche(s) corpus qui répond(ent). Source: Patrick_Banque_de_questions.xlsx, 2026-07-30.",
+  "categories": [
+    {
+      "id": 1,
+      "label": "Demander mon PVT / WHM & préparer le départ",
+      "icon": "TBD",
+      "questions": [
+        { "q": "Qu'est-ce que le PVT / Working Holiday au Canada ?", "fiche": "00" },
+        { "q": "Mon pays participe-t-il au programme EIC ?", "fiche": "11" },
+        { "q": "Quel est l'âge limite pour faire une demande ?", "fiche": "11" },
+        { "q": "Combien de temps puis-je rester avec un PVT ?", "fiche": "11" },
+        { "q": "Ai-je besoin d'une offre d'emploi pour demander un PVT ?", "fiche": "00" },
+        { "q": "Comment fonctionnent les rondes d'invitations ?", "fiche": "00" },
+        { "q": "Quels documents dois-je fournir pour ma demande ?", "fiche": "00" },
+        { "q": "Quelle assurance dois-je souscrire, et pour quelle durée ?", "fiche": "00, 02" },
+        { "q": "Quel montant de fonds dois-je prouver ?", "fiche": "00" },
+        { "q": "J'ai deux nationalités : laquelle utiliser pour ma demande ?", "fiche": "00b, 11" }
+      ]
+    },
+    {
+      "id": 2,
+      "label": "M'installer & vivre à Montréal / au Québec",
+      "icon": "TBD",
+      "questions": [
+        { "q": "Quels quartiers de Montréal pour un nouvel arrivant ?", "fiche": "03, 09" },
+        { "q": "Puis-je louer un logement sans emploi canadien ?", "fiche": "03" },
+        { "q": "Comment fonctionne le bail au Québec (mes droits) ?", "fiche": "03" },
+        { "q": "Peut-on vivre à Montréal sans voiture ?", "fiche": "10" },
+        { "q": "Comment fonctionne le transport en commun (OPUS, Chrono) ?", "fiche": "10" },
+        { "q": "Où et comment chercher un emploi à Montréal ?", "fiche": "06" },
+        { "q": "Le français est-il obligatoire pour travailler au Québec ?", "fiche": "06, 08" },
+        { "q": "Comment adapter mon CV au marché québécois ?", "fiche": "06" },
+        { "q": "Quel budget mensuel prévoir à Montréal ?", "fiche": "04" },
+        { "q": "Comment reconnaître une arnaque au logement ?", "fiche": "12" }
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Faire mes démarches administratives",
+      "icon": "TBD",
+      "questions": [
+        { "q": "Qu'est-ce que le NAS et quand le demander ?", "fiche": "01" },
+        { "q": "Où faire ma demande de NAS ?", "fiche": "01" },
+        { "q": "Suis-je admissible à la RAMQ en PVT ?", "fiche": "02" },
+        { "q": "Y a-t-il un délai de carence pour la RAMQ ?", "fiche": "02" },
+        { "q": "Dois-je garder mon assurance privée après la RAMQ ?", "fiche": "02" },
+        { "q": "Quelle banque choisir comme nouvel arrivant ?", "fiche": "04" },
+        { "q": "Comment ouvrir un compte bancaire sans emploi ?", "fiche": "04" },
+        { "q": "Combien de temps conduire avec mon permis étranger ?", "fiche": "10" },
+        { "q": "Puis-je échanger mon permis contre un permis québécois ?", "fiche": "10" },
+        { "q": "Dois-je produire une déclaration de revenus au Canada ?", "fiche": "15" }
+      ]
+    },
+    {
+      "id": 4,
+      "label": "M'intégrer, réussir, repartir ou rester",
+      "icon": "TBD",
+      "questions": [
+        { "q": "Comment rencontrer des gens et me créer un réseau ?", "fiche": "13" },
+        { "q": "Comment améliorer mon français au Québec ?", "fiche": "08" },
+        { "q": "Comment gérer le mal du pays / éviter l'isolement ?", "fiche": "13" },
+        { "q": "Comment bien vivre (et aimer) mon premier hiver ?", "fiche": "07, 13" },
+        { "q": "Quelles activités à petit budget, même l'hiver ?", "fiche": "13, 09" },
+        { "q": "Puis-je voyager aux États-Unis pendant mon PVT ?", "fiche": "à créer (voyage/USA)" },
+        { "q": "Montréal est-elle accueillante (2SLGBTQ+, diversité) ?", "fiche": "14" },
+        { "q": "Puis-je faire une deuxième participation à l'EIC ?", "fiche": "11" },
+        { "q": "Comment rester au Canada après mon PVT ?", "fiche": "16" },
+        { "q": "Quelles options pour la résidence permanente ?", "fiche": "16" }
+      ]
+    }
+  ]
+}

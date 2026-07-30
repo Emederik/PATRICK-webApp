@@ -34,8 +34,14 @@ corpus/
 ├── 11-pvt-par-nationalite.md     ← Panorama EIC 36 pays : âge/durée/participations par pays
 ├── 12-arnaques-securite.md       ← Fraudes immigration/logement/emploi, qui contacter
 ├── 13-bien-etre-coup-de-dur.md   ← Mal du pays, détresse (811, 988), coup dur financier, se créer un réseau & sortir l'hiver
-└── 14-diversite-inclusion.md     ← Égalité/Charte (CDPDJ), handicap (OPHQ, Kéroul), 2SLGBTQ+ (Interligne), autochtones (Native Montreal)
+├── 14-diversite-inclusion.md     ← Égalité/Charte (CDPDJ), handicap (OPHQ, Kéroul), 2SLGBTQ+ (Interligne), autochtones (Native Montreal)
+├── 15-impots.md                  ← 2 déclarations (ARC + Revenu Québec), résidence fiscale, T4/Relevé 1, remboursement
+└── 16-immigration.md             ← Rester après le PVT : prolongation, RP au Québec (CSQ/Arrima/PSTQ/PEQ) — orientation + pro
 ```
+
+> ## À créer (notes)
+> - **Fiche emploi / recherche d'emploi** (enrichir `06-emploi-cv`) : quoi mettre / ne pas mettre dans un CV québécois (pas de photo, âge, statut marital…), CV étranger vs québécois, **sites & pistes de recherche d'emploi**, tips, à quoi s'attendre, différences.
+> - **Fiche différences culturelles & lexique** (enrichir `08-culture-vie-quotidienne`) : expressions **EN & FR** vs **canadien / québécois**, faux-amis, codes sociaux, ce qui surprend.
 
 ## 3. Schéma d'une fiche (à respecter partout)
 
