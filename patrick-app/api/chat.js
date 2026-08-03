@@ -228,14 +228,44 @@ function mockRetrieve(message){
   return score>0 ? { doc:best } : { none:true };
 }
 
+/* ---- Persistent anonymous log (DynamoDB) — INERT until env LOG_TABLE is set ---- */
+let ddbClient = null, PutItemCommand = null, DDB_READY = false;
+function initDdb(){
+  if (DDB_READY || !process.env.LOG_TABLE) return;
+  try {
+    const m = require("@aws-sdk/client-dynamodb");
+    PutItemCommand = m.PutItemCommand;
+    ddbClient = new m.DynamoDBClient({ region: REGION });
+    DDB_READY = true;
+  } catch (e) { console.error("[log] DynamoDB SDK unavailable:", e.message); }
+}
+/** Fire-and-forget write of ONE anonymous event. No IP, no identity. Safe no-op if LOG_TABLE unset. */
+function logToStore(evt){
+  if (!process.env.LOG_TABLE) return;
+  initDdb();
+  if (!DDB_READY) return;
+  const item = {
+    id:       { S: `${Date.now()}-${Math.random().toString(36).slice(2,8)}` },
+    ts:       { S: String(evt.ts || new Date().toISOString()) },
+    type:     { S: String(evt.type || "q") },
+    lang:     { S: String(evt.lang || "") },
+    answered: { BOOL: !!evt.answered },
+    sourced:  { BOOL: !!evt.sourced },
+    question: { S: String(evt.question || "").slice(0, 300) }
+  };
+  ddbClient.send(new PutItemCommand({ TableName: process.env.LOG_TABLE, Item: item }))
+    .catch(e => console.error("[log] DynamoDB put error:", e.name));
+}
+
 function logUnanswered(message){
-  console.log(JSON.stringify({ type:"unanswered", ts:new Date().toISOString(), question:String(message).slice(0,300) }));
+  const evt = { type:"unanswered", ts:new Date().toISOString(), answered:false, sourced:false, question:String(message).slice(0,300) };
+  console.log(JSON.stringify(evt)); logToStore(evt);
 }
 // Journal anonyme de TOUTES les questions (pour classer par fréquence). AUCUN identifiant : pas d'IP,
-// pas de nom. Seuls la question (tronquée), la langue et l'issue. Persistance = logs Vercel pour l'instant
-// (voir README : passer à un store S3/DynamoDB dédié pour une analyse de fréquence pérenne).
+// pas de nom. Seuls la question (tronquée), la langue et l'issue.
 function logQuestion(message, lang, answered, sourced){
-  console.log(JSON.stringify({ type:"q", ts:new Date().toISOString(), lang, answered:!!answered, sourced:!!sourced, question:String(message||"").slice(0,300) }));
+  const evt = { type:"q", ts:new Date().toISOString(), lang, answered:!!answered, sourced:!!sourced, question:String(message||"").slice(0,300) };
+  console.log(JSON.stringify(evt)); logToStore(evt);
 }
 
 const T = {
