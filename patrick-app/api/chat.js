@@ -231,6 +231,12 @@ function mockRetrieve(message){
 function logUnanswered(message){
   console.log(JSON.stringify({ type:"unanswered", ts:new Date().toISOString(), question:String(message).slice(0,300) }));
 }
+// Journal anonyme de TOUTES les questions (pour classer par fréquence). AUCUN identifiant : pas d'IP,
+// pas de nom. Seuls la question (tronquée), la langue et l'issue. Persistance = logs Vercel pour l'instant
+// (voir README : passer à un store S3/DynamoDB dédié pour une analyse de fréquence pérenne).
+function logQuestion(message, lang, answered, sourced){
+  console.log(JSON.stringify({ type:"q", ts:new Date().toISOString(), lang, answered:!!answered, sourced:!!sourced, question:String(message||"").slice(0,300) }));
+}
 
 const T = {
   fr:{ rest:"Patrick se repose 😴 — reviens plus tard (plafond de démo atteint).",
@@ -274,7 +280,7 @@ async function handleChat({ message, lang, history, mode } = {}, ip = "anon"){
       const { chunks, sources } = await bedrockRetrieve(message);
       if (!chunks.length){ logUnanswered(message); return { status:200, body:{ reply:T[L].unanswered, sources:[], unanswered:true, rest:false } }; }
       const reply = await bedrockGenerate(message, chunks, L, history);
-      if (reply) return { status:200, body:{ reply, sources, unanswered:false, rest:false } };
+      if (reply){ logQuestion(message, L, true, sources.length>0); return { status:200, body:{ reply, sources, unanswered:false, rest:false } }; }
       // empty generation → fall through to mock
     } catch (e) {
       console.error("[chat] Bedrock error → mock fallback:", e.name, e.message);
@@ -285,6 +291,7 @@ async function handleChat({ message, lang, history, mode } = {}, ip = "anon"){
   const r = mockRetrieve(message);
   if (r.offtopic) return { status:200, body:{ reply:T[L].offtopic, sources:[], unanswered:false, rest:false } };
   if (r.none){ logUnanswered(message); return { status:200, body:{ reply:T[L].unanswered, sources:[], unanswered:true, rest:false } }; }
+  logQuestion(message, L, true, (r.doc.src||[]).length>0);
   return { status:200, body:{ reply:r.doc[L], sources:r.doc.src, unanswered:false, rest:false } };
 }
 
