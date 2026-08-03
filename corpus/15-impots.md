@@ -14,7 +14,7 @@ sources_verifiees_le: 2026-07-30
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : impots, declaration, federal, provincial, arc, revenu-quebec, date-limite
-- **source** : Revenu Québec (revenuquebec.ca) + ARC (canada.ca) — vérifié 2026-07-30
+- **source** : Revenu Québec — Déclaration de revenus : https://www.revenuquebec.ca/fr/citoyens/declaration-de-revenus/ + ARC (canada.ca) — vérifié 2026-08-03
 - **dernière_vérif** : 2026-07-30
 - **confiance** : haute
 

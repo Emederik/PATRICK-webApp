@@ -16,7 +16,7 @@ sources_verifiees_le: 2026-07-27
 - **audience** : pvt
 - **nationalite** : commun
 - **tags** : eic, iec, pays, source-officielle, eligibilite, volets
-- **source** : IRCC — « International Experience Canada : Who can apply » + « Eligibility by country and category » (canada.ca, page modifiée 2026-02-24)
+- **source** : IRCC — « International Experience Canada : Who can apply » + « Eligibility by country and category » : https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/about.html (canada.ca, page modifiée 2026-02-24)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 

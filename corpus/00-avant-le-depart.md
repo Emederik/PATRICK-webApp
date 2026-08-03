@@ -10,7 +10,7 @@ sources_verifiees_le: 2026-07-27
 - **audience** : pvt
 - **nationalite** : commun
 - **tags** : pvt, eic, nationalite, nationalites, bi-nationalite, age, duree, quotas, ententes
-- **source** : IRCC — Expérience Internationale Canada (canada.ca) — URL exacte à confirmer
+- **source** : IRCC — Expérience Internationale Canada : https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/about.html
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 

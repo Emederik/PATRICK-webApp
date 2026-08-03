@@ -10,7 +10,7 @@ sources_verifiees_le: 2026-07-25
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : forfait, mobile, crtc, operateurs, prix
-- **source** : CRTC (organisme de régulation) — URL à confirmer
+- **source** : CRTC (organisme de régulation) — https://crtc.gc.ca/fra/accueil-home.htm
 - **dernière_vérif** : 2026-07-25
 - **confiance** : moyenne
 

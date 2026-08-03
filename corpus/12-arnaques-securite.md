@@ -14,7 +14,7 @@ sources_verifiees_le: 2026-07-27
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : fraude, arnaque, securite, centre-antifraude, signalement
-- **source** : Centre antifraude du Canada + Canada.ca « Se protéger contre la fraude »
+- **source** : Centre antifraude du Canada — https://antifraudcentre-centreantifraude.ca + Canada.ca « Se protéger contre la fraude » — https://www.canada.ca/fr/immigration-refugies-citoyennete/services/proteger-fraude.html
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 
@@ -34,7 +34,7 @@ virement non encore accepté peut parfois être annulé).
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : ircc, immigration, faux-appel, menace, deportation, telephone
-- **source** : IRCC / Canada.ca — « Protégez-vous contre la fraude »
+- **source** : IRCC / Canada.ca — « Protégez-vous contre la fraude » — https://www.canada.ca/fr/immigration-refugies-citoyennete/services/proteger-fraude.html
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 
@@ -54,7 +54,7 @@ payer, signaler.
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : logement, depot, virement, marketplace, visite, tal, regie-logement
-- **source** : SPVM (fraude — location) + Régie du logement / TAL + Centre antifraude — vérifié 2026-07-27
+- **source** : SPVM — https://spvm.qc.ca + Tribunal administratif du logement (TAL) — https://www.tal.gouv.qc.ca + Centre antifraude — https://antifraudcentre-centreantifraude.ca (vérifié 2026-07-27)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 

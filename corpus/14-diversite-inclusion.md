@@ -17,7 +17,7 @@ sources_verifiees_le: 2026-07-27
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : diversite, inclusion, egalite, charte, droits, discrimination
-- **source** : Charte des droits et libertés de la personne (Québec) + CDPDJ — cdpdj.qc.ca (vérifié 2026-07-27)
+- **source** : Charte des droits et libertés de la personne (Québec) + CDPDJ — https://www.cdpdj.qc.ca (vérifié 2026-07-27)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 
@@ -39,7 +39,7 @@ harcèlement (cdpdj.qc.ca).
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : handicap, accessibilite, invisible, ophq, keroul, mobilite, hiver
-- **source** : Office des personnes handicapées du Québec (ophq.gouv.qc.ca) + Kéroul (keroul.qc.ca) — vérifié 2026-07-27
+- **source** : Office des personnes handicapées du Québec — https://www.ophq.gouv.qc.ca + Kéroul — https://www.keroul.qc.ca (vérifié 2026-07-27)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 
@@ -63,7 +63,7 @@ l'**accessibilité du tourisme et de la culture** au Québec (keroul.qc.ca).
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : 2slgbtq, lgbtq, village, interligne, gris, ecoute, inclusion
-- **source** : Interligne (interligne.co) + GRIS-Montréal (gris.ca) — vérifié 2026-07-27
+- **source** : Interligne — https://www.interligne.co + GRIS-Montréal — https://www.gris.ca (vérifié 2026-07-27)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 
@@ -82,7 +82,7 @@ une réputation d'ouverture. Pour du soutien, de l'écoute ou de l'information :
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : autochtones, premieres-nations, inuit, metis, native-montreal, communaute
-- **source** : Native Montreal / Montréal Autochtone (nativemontreal.com) + Centre d'amitié autochtone de Montréal (nfcm.org) — vérifié 2026-07-27
+- **source** : Native Montreal / Montréal Autochtone — https://www.nativemontreal.com + Centre d'amitié autochtone de Montréal — https://www.nfcm.org (vérifié 2026-07-27)
 - **dernière_vérif** : 2026-07-27
 - **confiance** : haute
 

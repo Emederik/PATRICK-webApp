@@ -33,7 +33,7 @@ il aide à **comprendre les options** et à **poser les bonnes questions**.
 - **audience** : pvt
 - **nationalite** : commun
 - **tags** : prolongation, deuxieme-participation, permis-ferme, eimt, conjoint, statut-maintenu
-- **source** : IRCC — Expérience Internationale Canada + permis de travail (vérifié 2026-07-30)
+- **source** : IRCC — Expérience Internationale Canada : https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/iec/about.html (vérifié 2026-08-03)
 - **dernière_vérif** : 2026-07-30
 - **confiance** : moyenne
 

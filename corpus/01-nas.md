@@ -10,7 +10,7 @@ sources_verifiees_le: 2026-07-25
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : nas, sin, travail, numero, service-canada
-- **source** : Service Canada (canada.ca) — URL exacte à confirmer
+- **source** : Service Canada — Numéro d'assurance sociale : https://www.canada.ca/fr/emploi-developpement-social/services/numero-assurance-sociale.html
 - **dernière_vérif** : 2026-07-25
 - **confiance** : haute
 
@@ -24,7 +24,7 @@ Le **Numéro d'assurance sociale (NAS)**, en anglais **SIN**, est un numéro à 
 - **audience** : commun
 - **nationalite** : commun
 - **tags** : nas, demande, en-ligne, documents, gratuit
-- **source** : Service Canada — URL exacte à confirmer
+- **source** : Service Canada — Numéro d'assurance sociale : https://www.canada.ca/fr/emploi-developpement-social/services/numero-assurance-sociale.html
 - **dernière_vérif** : 2026-07-25
 - **confiance** : haute
 

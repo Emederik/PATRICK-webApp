@@ -36,11 +36,13 @@ corpus/
 ├── 13-bien-etre-coup-de-dur.md   ← Mal du pays, détresse (811, 988), coup dur financier, se créer un réseau & sortir l'hiver
 ├── 14-diversite-inclusion.md     ← Égalité/Charte (CDPDJ), handicap (OPHQ, Kéroul), 2SLGBTQ+ (Interligne), autochtones (Native Montreal)
 ├── 15-impots.md                  ← 2 déclarations (ARC + Revenu Québec), résidence fiscale, T4/Relevé 1, remboursement
-└── 16-immigration.md             ← Rester après le PVT : prolongation, RP au Québec (CSQ/Arrima/PSTQ/PEQ) — orientation + pro
+├── 16-immigration.md             ← Rester après le PVT : prolongation, RP au Québec (CSQ/Arrima/PSTQ/PEQ) — orientation + pro
+└── 17-etudiant-international.md   ← Volet étudiant·e international·e : CAQ + permis d'études, travail, santé/assurance, démarches, info≠conseil, réseau UQ
 ```
 
 > ## À créer (notes)
-> - **Fiche emploi / recherche d'emploi** (enrichir `06-emploi-cv`) : quoi mettre / ne pas mettre dans un CV québécois (pas de photo, âge, statut marital…), CV étranger vs québécois, **sites & pistes de recherche d'emploi**, tips, à quoi s'attendre, différences.
+> - ~~**Fiche emploi / recherche d'emploi** (enrichir `06-emploi-cv`)~~ ✅ *fait 2026-08-03* : CV québécois vs étranger, réseautage, orientation/mentorat (Academos), à quoi s'attendre, liens officiels (Guichet-Emplois).
+> - ~~**Volet étudiant·e international·e**~~ ✅ *fait 2026-08-03* : nouvelle fiche `17-etudiant-international.md` (pendant corpus des specs `patrick-volet-etudiant-spec.md` / `HANDOFF-patrick-volet-etudiant-cowork.md`).
 > - **Fiche différences culturelles & lexique** (enrichir `08-culture-vie-quotidienne`) : expressions **EN & FR** vs **canadien / québécois**, faux-amis, codes sociaux, ce qui surprend.
 
 ## 3. Schéma d'une fiche (à respecter partout)
