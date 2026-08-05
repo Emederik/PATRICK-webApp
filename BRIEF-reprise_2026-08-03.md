@@ -4,7 +4,7 @@ Session Cowork autonome. Tout le travail fichier est **fait et validé** ; il re
 actions manuelles** (git push + S3/Sync) car le sandbox n'a pas pu committer (voir §4).
 
 > ⚠️ Note : la conversation « Insights from Isabelle » n'a pas été collée (tu n'étais pas là). J'ai
-> travaillé à partir du **HANDOFF déjà présent** (`Isabelle Ducharme/files/HANDOFF-…md`), qui est un
+> travaillé à partir du **HANDOFF déjà présent** (`infos-additionnelles/files/HANDOFF-…md`), qui est un
 > résumé auto-suffisant de cette conversation. Si tu veux, colle le transcript brut et je complète.
 
 ---
